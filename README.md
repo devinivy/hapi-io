@@ -5,14 +5,14 @@
 [![Dependency Status](https://david-dm.org/sibartlett/hapi-io.svg)](https://david-dm.org/sibartlett/hapi-io)
 [![devDependency Status](https://david-dm.org/sibartlett/hapi-io/dev-status.svg)](https://david-dm.org/sibartlett/hapi-io#info=devDependencies)
 
-Awesome socket.io plugin for [hapi](http://hapijs.com/) (inspired by [express.oi](https://github.com/sibartlett/express.oi) and [express.io](https://github.com/techpines/express.io)).
+A [Primus](http://primus.io) integration with [hapi](http://hapijs.com/) (inspired by [express.oi](https://github.com/sibartlett/express.oi) and [express.io](https://github.com/techpines/express.io)).
 
 ##### Table of Contents
 
 * [Installation and Configuration](#installation-and-configuration)
 * [Authorization](#authorization)
-* [Raw access to socket.io](#raw-access-to-socketio)
-* [Forward socket.io events to hapi routes](#forward-events-to-hapi-routes)
+* [Raw access to Primus](#raw-access-to-primus)
+* [Forward primus events to hapi routes](#forward-events-to-hapi-routes)
 
 
 ### Installation and Configuration
@@ -32,12 +32,9 @@ server.register({
 
 ##### Options
 
-* `connectionLabel`
-* `socketio` - an object which is passed through to socket.io
-* `auth` - authentication configuration. Value can be:
-  * a string with the name of an authentication strategy registered with `server.auth.strategy()`.
-  * an object with:
-    * `strategies` - a string array of strategy names in order they should be attempted. If only one strategy is used, `strategy` can be used instead with the single string value.
+* `connectionLabel` - an optional label to select the connection on which to
+* `primus` - an object which is passed through to `Primus`.
+* `auth` - authentication configuration for the socket handshake. Value can be any route auth configuration understood by hapi.
 
 
 ### Authorization
@@ -47,14 +44,14 @@ hapi-io can use a hapi auth strategy to authorize a socket.io connection. The so
 See [options](##options) for how to configure.
 
 
-### Raw access to socket.io
+### Raw access to Primus
 
-You can get raw access to the [socket.io server](http://socket.io/docs/server-api/) as follows:
+You can get raw access to the Primus instance as follows:
 
 ```js
 exports.register = function(server, options, next) {
 
-  var io = server.plugins['hapi-io'].io;
+  var primus = server.plugins['hapi-io'].primus;
 
 };
 ```
@@ -64,7 +61,7 @@ exports.register = function(server, options, next) {
 
 _Perfect for exposing HTTP API endpoints over websockets!_
 
-socket.io events can be mapped to hapi routes; reusing the same authentication, validation, plugins and handler logic.
+Primus events can be mapped to hapi routes; reusing the same authentication, validation, plugins and handler logic.
 
 ##### Example
 
@@ -173,18 +170,17 @@ The fake HTTP request is constructed as follows:
 
 ##### Post event hook
 
-You can do further processing on a socket.io event, after it has been processed by hapi.
+You can do further processing on a Primus event, after it has been processed by hapi.
 
 You can use the `post` option to specify a function, with two parameters: `ctx` and `next`. `ctx` has the following properties:
 
-* `io` - the socket.io Server object
-* `socket` - the socket.io Socket object
-* `event` - the socket.io event
+* `primus` - the Primus instance
+* `spark` - the Primus spark instance
+* `event` - the Primus event
 * `data` - the event's data object
 * `req` - the request object that was injected into hapi
 * `res` - the result object that was returned by hapi
-* `result` - the res.result
-* `trigger` - a method that allows you to trigger another socket.io event
+* `result` - the `res.result`
 
 ```js
 server.route({
@@ -195,7 +191,7 @@ server.route({
       'hapi-io': {
         event: 'join-room',
         post: function(ctx, next) {
-          ctx.socket.join(ctx.data.roomId);
+          ctx.spark.join(ctx.data.roomId);
           next();
         }
       }

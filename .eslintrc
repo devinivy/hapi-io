@@ -1,15 +1,6 @@
 {
-    "env": {
-        "node": true
-    },
-
+    "extends": "./node_modules/lab/lib/linters/eslint/.eslintrc",
     "rules": {
-        "no-underscore-dangle": 0,
-
-        "global-strict": [2, "always"],
-        "quotes": [2, "single"],
-        "strict": [2, "global"],
-
-        "consistent-return": 0
+        "indent": [2, 2]
     }
 }
