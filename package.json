@@ -16,7 +16,7 @@
     "primus-emitter": "~3.1.1"
   },
   "peerDependencies": {
-    "primus": ">=3.0.0 <5.0.0",
+    "primus": ">=3.0.0 <5.0.0"
   },
   "devDependencies": {
     "code": "^1.4.1",
