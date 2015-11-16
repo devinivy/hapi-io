@@ -13,9 +13,11 @@
   "dependencies": {
     "async": "^1.3.0",
     "lodash": "^3.10.0",
-    "primus": "^3.2.1",
     "primus-emitter": "~3.1.1"
   },
+  "peerDependencies": {
+    "primus": ">=3.0.0 <5.0.0",
+  }
   "devDependencies": {
     "code": "^1.4.1",
     "lab": "^5.13.0"
